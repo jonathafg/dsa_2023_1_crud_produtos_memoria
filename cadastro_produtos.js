@@ -1,22 +1,27 @@
-
 let listaProdutos = [];
 let idAutoIncrement = 1;
+
+function limpar() {
+    listaProdutos = [];
+    idAutoIncrement = 1;
+}
 
 function listar() {
     return listaProdutos;
 }
 
 function inserir(produto) {
-    if (produto && produto.nome && produto.preco){
+    if(produto && produto.nome && produto.preco){
         produto.id = idAutoIncrement++;
         listaProdutos.push(produto);
-    } else {
-        throw {
-            numero: 400,
-            msg: "ERRO: os parametros de produto estão invalidos."
-        };
+        return produto;
     }
-    
+    else {
+        throw new Error({
+            numero: 400,
+            msg: "Erro: Os parametros de produto estao invalidos"
+        });
+    }
 }
 
 function buscarPorId(id) {
@@ -25,47 +30,48 @@ function buscarPorId(id) {
             return produto;
         }
     }
-    throw {
-        erro: 404,
-        msg: "ERRO: Produto nao encontrado"
-    }
+    throw new Error({
+        numero: 404,
+        msg: "Erro: Produto nao encontrado."
+    });
 }
 
-
 function atualizar(id, produtoAlterar) {
-    if (produtoAlterar && produtoAlterar.nome && produtoAlterar.preco){
-        for(let indice in listaProdutos){
-            if(listaProdutos[indice].id === id) {
-                produtoAlterar.id = id;
-                listaProdutos[indice] = produtoAlterar;
-            }
+    if(!produtoAlterar || !produtoAlterar.nome || !produtoAlterar.preco){
+        throw new Error({
+            numero: 400,
+            msg: "Erro: Os parametros de produto estao invalidos"
+        });       
+    }
+    for(let indice in listaProdutos){
+        if(listaProdutos[indice].id === id) {
+            produtoAlterar.id = id;
+            listaProdutos[indice] = produtoAlterar;
+            return listaProdutos[indice];
         }
-        throw {
-            erro: 404,
-            msg: "ERRO: Produto não encontrado."
-        } 
-
-    } else {
-        throw {
-            erro: 400,
-            msg: "ERRO: Os dados do produto não estão completos."
-        }
-    } 
+    }    
+    throw new Error({
+        numero: 404,
+        msg: "Erro: Produto nao encontrado."
+    });
 }
 
 function deletar(id) {
     for(let indice in listaProdutos){
         if(listaProdutos[indice].id === id) {
-            listaProdutos.splice(indice,1);
+            const produtoDeletado = listaProdutos.splice(indice,1);
+            return produtoDeletado[0];
         }
     }
-    throw {
-        erro: 404,
-        msg: "ERRO: Produto nao encontrado"
-    }
+    throw new Error({
+        numero: 404,
+        msg: "Erro: Produto nao encontrado."
+    });
+
 }
 
 module.exports = { 
+    limpar,
     listar,
     inserir,
     buscarPorId,
